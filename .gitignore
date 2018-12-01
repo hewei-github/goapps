@@ -1,0 +1,4 @@
+# for golang project
+.idea/
+node_modules/
+.vsocde/
