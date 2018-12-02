@@ -14,6 +14,7 @@ import (
 
 import (
 	_ "github.com/hewei-github/goapps/cmds"
+	_ "github.com/hewei-github/goapps/iotax"
 	/*_ "github.com/hewei-github/goapps/enum"*/
 )
 
@@ -25,26 +26,33 @@ func main() {
 		err error
 		now time.Time
 		v  time.Time
+		t  * time.Timer
 		express string
 	)
 	// 秒 分 时 日 月 周 年 [enum timestamp]
-	express = "* 2 * * * *"
+	express = "20 * * * * * *"
 	var info = "echo times :"
-	for 1 != i {
-		now = time.Now()
-		time.Sleep(time.Duration(1) * time.Second)
-		if exp,err = cron.Parse(express); nil != err{
-			println(err)
-		}
-		v = exp.Next(now)
-		println("time stamp : ",v.String())
-		println("time local : ",string(v.Local().UnixNano()))
-		println("timestamp : ",string(v.Unix()))
-		println("time : ", i)
-		time.AfterFunc(v.Sub(time.Now()), func() {
-			var ix = info + string(i)
-			vars.Echo(ix)
-			i = 1
-		})
+	now = time.Now()
+	if exp,err = cron.Parse(express); nil != err{
+		println(err)
+		return
 	}
+	var j = 0
+	v = exp.Next(now)
+	println("触发时间: ",v.String())
+	t = time.AfterFunc(v.Sub(time.Now()), func() {
+		var ix = info + string(i)
+		vars.Echo(ix)
+		i = 1
+		vars.Echo("开启定时任务了")
+	})
+	for 1 != i {
+		time.Sleep(time.Duration(1) * time.Second)
+		println("time stamp : ",v.String())
+		println("time now : ",time.Now().String())
+		// println("timestamp : ",v.Unix())
+		j++
+		println("sleep times : ", j)
+	}
+	t.Stop()
 }
